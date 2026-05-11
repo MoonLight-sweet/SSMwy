@@ -6,6 +6,7 @@ import com.property.management.entity.Owner;
 import com.property.management.mapper.OwnerMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class OwnerServiceImpl implements OwnerService {
 
 //查询所有或者单个业主信息（涉及到分页查询）
     @Override
+    @Transactional(readOnly = true)
     public List<Owner> query(String ownerName, String startTime, String endTime) {
         return ownerMapper.query(ownerName,startTime,endTime);
     }
@@ -28,6 +30,7 @@ public class OwnerServiceImpl implements OwnerService {
 
 //查询总条数
     @Override
+    @Transactional(readOnly = true)
     public Long queryCount(String ownerName, String startTime, String endTime) {
         return ownerMapper.queryCount(ownerName,startTime,endTime);
     }
@@ -35,12 +38,14 @@ public class OwnerServiceImpl implements OwnerService {
 
 //    根据id单个删除
     @Override
+    @Transactional
     public Boolean deleteById(Integer id) {
 
         return ownerMapper.deleteById(id);
     }
 //根据ids批量删除
     @Override
+    @Transactional
     public Boolean deleteOwnerByIds(String ids) {
         return ownerMapper.deleteByIds(ids);
     }
@@ -48,26 +53,31 @@ public class OwnerServiceImpl implements OwnerService {
 
     //根据选中编辑的id来查询需要回显的数据
     @Override
+    @Transactional(readOnly = true)
     public Owner queryById(Integer id) {
         return ownerMapper.queryById(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Community> queryCommunityInfo(Integer id) {
         return ownerMapper.queryCommunityInfo(id);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Home> queryHouseInfo(Integer id) {
         return ownerMapper.queryHouseInfo(id);
     }
 
     @Override
+    @Transactional
     public Boolean updateOwner(Owner owner) {
         return ownerMapper.updateOwner(owner);
     }
 
     @Override
+    @Transactional
     public Boolean insertOwner(Owner owner) {
         return ownerMapper.insert(owner);
     }

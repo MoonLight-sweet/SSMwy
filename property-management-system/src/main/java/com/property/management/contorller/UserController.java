@@ -26,17 +26,23 @@ import java.util.UUID;
 public class UserController {
     @Autowired
     private UserService userService;
-    private String imgString = null;
-    private String imgUrl = null;
+
     @RequestMapping("captcha")
     public void captcha(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        System.out.println("========== captcha 方法被调用 ==========");
         LineCaptcha lineCaptcha = new LineCaptcha(260, 100, 4, 5);
         String code = lineCaptcha.getCode();
+        System.out.println("验证码: " + code);
         req.getSession().setAttribute("code", code);
+        resp.setContentType("image/jpeg");
+        resp.setHeader("Pragma", "No-cache");
+        resp.setHeader("Cache-Control", "no-cache");
+        resp.setDateHeader("Expires", 0);
         ServletOutputStream outputStream = resp.getOutputStream();
-
+        System.out.println("输出流已获取");
         lineCaptcha.write(outputStream);
         outputStream.close();
+        System.out.println("========== captcha 方法执行完毕 ==========");
     }
 
     @RequestMapping("login")
@@ -45,7 +51,8 @@ public class UserController {
         LayUtil layUtil = new LayUtil();
         User user = userService.login(username, SecureUtil.md5(password));
         System.out.println(code);
-        if (session.getAttribute("code").equals(code)) {
+        String sessionCode = (String) session.getAttribute("code");
+        if (sessionCode != null && sessionCode.equals(code)) {
             if (user != null) {
                 if(user.getAvailable()==1){
                     layUtil.setCode("0");
@@ -93,8 +100,9 @@ public class UserController {
     }
     @RequestMapping("userUpdate")
     @ResponseBody
-    public Object userUpdate(User user){
+    public Object userUpdate(User user, HttpSession session){
         HashMap<String, Object> map = new HashMap<>();
+        String imgString = (String) session.getAttribute("imgString");
         user.setImg(imgString);
         System.out.println(user);
         Boolean b = userService.userUpdate(user);
@@ -102,14 +110,14 @@ public class UserController {
             map.put("code", 200);
             map.put("msg", "个人信息更新成功");
         }else{
-            map.put("code", 200);
+            map.put("code", 500);
             map.put("msg", "个人信息更新失败");
         }
         return map;
     }
     @RequestMapping("userImgInsert")
     @ResponseBody
-    public Object userImgInsert(MultipartFile img,HttpServletRequest req){
+    public Object userImgInsert(MultipartFile img, HttpServletRequest req, HttpSession session){
         HashMap<String, String> map = new HashMap<>();
         String Filename = img.getOriginalFilename();
         String realPath = req.getServletContext().getRealPath("/userImg");
@@ -125,9 +133,8 @@ public class UserController {
             System.out.println("url = " + url);
             map.put("status","200");
             map.put("newName",newName);
-            imgString=newName;
+            session.setAttribute("imgString", newName);
             map.put("url",url);
-            imgUrl=url;
         } catch (IOException e) {
             map.put("status","500");
             map.put("msg",e.getMessage());

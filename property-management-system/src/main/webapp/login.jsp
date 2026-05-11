@@ -1,5 +1,5 @@
 
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8" language="java" isELIgnored="false" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -179,7 +179,7 @@
             <i class="layui-icon layui-icon-auz"></i>
             <input class="layui-input" name="code" placeholder="请输入验证码" autocomplete="off"
                    lay-verType="tips" lay-verify="required" required/>
-            <img class="login-captcha" alt="" />
+            <img class="login-captcha" src="${pageContext.request.contextPath}/user/captcha" alt="" />
         </div>
         <div class="layui-form-item">
             <a href="/register.jsp" class="layui-link">注册账号</a>
@@ -209,7 +209,7 @@
         /* 表单提交 */
         form.on('submit(loginSubmit)', function (obj) {
             //发送ajax请求 登录
-            $.post('/user/login',obj.field,function (res) {
+            $.post('${pageContext.request.contextPath}/user/login',obj.field,function (res) {
                 //判定响应的结果
                 if(res.code==0){
                     layer.msg(res.msg,{icon:1},function () {
@@ -225,10 +225,11 @@
         });
 
         /* 图形验证码 */
-        var captchaUrl = '/user/captcha';
+        var captchaUrl = '${pageContext.request.contextPath}/user/captcha';
+        $('img.login-captcha').attr('src', captchaUrl + '?t=' + (new Date).getTime());
         $('img.login-captcha').click(function () {
             this.src = captchaUrl + '?t=' + (new Date).getTime();
-        }).trigger('click');
+        });
 
     });
 </script>

@@ -5,6 +5,7 @@ import com.property.management.entity.Owner;
 import com.property.management.mapper.CarMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -16,43 +17,51 @@ public class CarServiceImpl implements  CarService{
 
 
     @Override
+    @Transactional(readOnly = true)
     public List<Car> query(String carNumber, String startTime, String endTime) {
         return carMapper.queryAll(carNumber,startTime,endTime);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Long queryCount(String carNumber, String startTime, String endTime) {
         return carMapper.queryCount(carNumber,startTime,endTime);
     }
 
     @Override
+    @Transactional
     public Boolean deleteById(Integer id) {
         return carMapper.deleteById(id);
     }
 
     @Override
+    @Transactional
     public Boolean deleteByIds(String ids) {
         return carMapper.deleteByIds(ids);
     }
 
     //添加和编辑共用的一个查询车主信息方法
     @Override
+    @Transactional(readOnly = true)
     public List<Owner> queryOwnerInfo(Integer id) {
         return carMapper.queryOwnerInfo(id);
     }
     //编辑时查询车辆信息
     @Override
+    @Transactional(readOnly = true)
     public Car queryCarInfoById(Integer id) {
         return carMapper.queryCarInfo(id);
     }
 
     //insert
     @Override
+    @Transactional
     public Boolean insertCar(Car car) {
         return carMapper.insert(car);
     }
 //    update
     @Override
+    @Transactional
     public Boolean updateCar(Car car) {
         return carMapper.updateCar(car);
     }
